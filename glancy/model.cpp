@@ -12,6 +12,41 @@
 using namespace std;
 using namespace morph;
 
+
+void overlap(agent* i, agent* j){
+    double r2 = 1.;     // NOTE: assumes radii 1
+    double r2x4 = 4.;   // NOTE: assumes radii 1
+    double dx, dy, dkx, dky, dk2;
+    dx = j->x-i->x;
+    dy = j->y-i->y;
+    if(dx*dx+dy*dy<=r2x4){
+        for(int k=0;k<i->n;k++){
+            dkx = j->x-(i->x+i->xk[k]);
+            dky = j->y-(i->y+i->yk[k]);
+            dk2 = dkx*dkx+dky*dky;
+            if(dk2 < r2 && dk2 < i->DK[k]){
+                i->DK[k]=dk2;
+                i->tau[k]=j->Tb;
+            }
+        }
+    }
+}
+
+void springs(agent* i, agent* j){
+
+    double r = 1.0; // assumes agent radius = 1.
+    double r2x4 = 4.;   // NOTE: assumes radii 1
+    double dx = j->x-i->x;
+    double dy = j->y-i->y;
+    double d = dx*dx+dy*dy;
+    if((d<=r2x4)){
+        double f = fmin(r-sqrt(d)*0.5,r)/sqrt(d);
+        j->vx += f*dx;
+        j->vy += f*dy;
+    }
+}
+
+
 int main (int argc, char **argv)
 {
     if (argc < 4) {
@@ -58,11 +93,39 @@ int main (int argc, char **argv)
     /*
      * Get simulation-wide parameters from JSON
      */
+
     const unsigned int steps = root.get ("steps", 1000).asUInt();
     const float speed = root.get ("speed", 0.01).asFloat();
+    const float Ta = root.get ("TA", 10.).asFloat();
+    const float rA = root.get ("Rarena", 10.).asFloat();
 
     const Json::Value A = root["agents"];
-    unsigned int N = static_cast<unsigned int>(A.size());
+    unsigned int Ntypes = static_cast<unsigned int>(A.size());
+
+
+    // Instantiate the model object
+    vector<agent> agents;
+    for(int i=0;i<Ntypes;i++){
+        const unsigned int n = A[i].get ("N", 1).asUInt();
+        const float xin = A[i].get ("x", -1e9).asFloat();
+        const float yin = A[i].get ("y", -1e9).asFloat();
+        const float k1 = A[i].get ("k1", 0.).asFloat();
+        const float k2 = A[i].get ("k2", 0.).asFloat();
+        const float G = A[i].get ("G", 0.).asFloat();
+        for(int j=0;j<n;j++){
+            double x=xin;
+            double y=yin;
+            if(xin==-1e9){
+                x = (morph::Tools::randDouble()-0.5)*2.;
+            }
+            if(yin==-1e9){
+                y = (morph::Tools::randDouble()-0.5)*2.;
+            }
+            agents.push_back(agent(x,y,(double)k1,(double)k2,(double)G,1000));
+        }
+    }
+    const int N = agents.size();
+
 
 
     string logpath = argv[3];
@@ -82,21 +145,14 @@ int main (int argc, char **argv)
     eye[2] = -0.4;
     vector<double> rot(3, 0.0);
 
-    double rhoInit = 15.;
+    double rhoInit = 19.;
     string worldName(argv[1]);
     string winTitle = worldName + ": window name";
     displays.push_back (morph::Gdisplay (300, 300, 100, 0, winTitle.c_str(), rhoInit, 0.0, 0.0));
     displays.back().resetDisplay (fix, eye, rot);
     displays.back().redrawDisplay();
 
-
-    // Instantiate the model object
-    vector<agent> agents;
-    for(int i=0;i<N;i++){
-        const float x = A[i].get ("x", 0.).asFloat();
-        const float y = A[i].get ("y", 0.).asFloat();
-        agents.push_back(agent((double)x,(double)y));
-    }
+    double dt = 0.05;                       // integration time constant
 
     // Call the init function, which can allocate variables and run
     // any pre-stepping computations.
@@ -111,10 +167,49 @@ int main (int argc, char **argv)
     while (!finished) {
         // Step the model
         try {
-            for(int i=0;i<agents.size();i++){
-                agents[i].step(speed);
+                for(int i=0;i<N;i++){
+                    for(int i=0;i<N;i++){
+                    agents[i].resetThermometers(Ta);
+                    for(int j=0;j<N;j++){
+                        if(i!=j){
+                            overlap(&agents[i],&agents[j]);
+                        }
+                    }
+                }
+
+                for(int i=0;i<N;i++){
+                    agents[i].contacts();
+                }
+
+                for(int i=0;i<N;i++){
+                    agents[i].reorient();
+                }
+
+                for(int i=0;i<N;i++){
+                    agents[i].updateBodyTemp(Ta,dt);
+                }
+
+                for(int i=0;i<N;i++){
+                    agents[i].move(rA,dt);
+                }
+
+                for(int i=0;i<N;i++){
+                    agents[i].resetVelocity();
+                }
+
+                for(int i=0;i<N;i++){
+                    for(int j=0;j<N;j++){
+                        if(i!=j){
+                            springs(&agents[i],&agents[j]);
+                        }
+                    }
+                }
+
+                for(int i=0;i<N;i++){
+                    agents[i].applyVelocity(dt);
+                }
             }
-            stepCount ++;
+            stepCount++;
 
         } catch (const exception& e) {
             cerr << "Caught exception calling agent.step(): " << e.what() << endl;
@@ -122,7 +217,7 @@ int main (int argc, char **argv)
         }
 
         displays[0].resetDisplay (fix, eye, rot);
-        displays[0].drawCylinder(0,0,-0.1,0.,0.,0.,10.,10.,24,vector<double>(3,0.9));
+        displays[0].drawCylinder(0,0,-0.1,0.,0.,0.,rA,rA,24,vector<double>(3,0.9));
         try {
             for(int i=0;i<agents.size();i++){
                 agents[i].plot(displays[0]);
