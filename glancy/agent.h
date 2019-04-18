@@ -17,7 +17,7 @@ public:
 
     double x, y, r, v, theta, Tb, Tc, A, TL, TR, overdn, nnorm, piOver2;
     double k1, k2, G;
-    vector<float> x_store, y_store;
+    vector<float> x_store, y_store, b_store;
     vector<double> col;
     int n; // number of thermometers
     vector<double> tau;
@@ -53,7 +53,7 @@ public:
         yk.resize(n);
         r = 1.;
         for(int k=0;k<n;k++){
-            double Phi = (double)k*2.*M_PI/(double)n-M_PI;
+            double Phi = (double)k*2.*M_PI/(double)n;//-M_PI; //NOTE THIS IS DIFFERENT FROM SUPPLEMENT
             phik[k] = Phi;
             xk[k] = r*cos(Phi);
             yk[k] = r*sin(Phi);
@@ -112,7 +112,7 @@ public:
         TL=0.;
         TR=0.;
         for(int k=0;k<n;k++){
-            LR[k]=(int)(M_PI-fabs(M_PI-fabs(fmod(theta+piOver2,2.*M_PI)-phik[k]))<piOver2);
+            LR[k]=round((M_PI-fabs(M_PI-fabs(fmod(theta+piOver2,2.*M_PI)-phik[k]))<piOver2));
             if(LR[k]){
                 TL += tau[k];
             } else {
@@ -136,6 +136,8 @@ public:
         double sL = 1./(1.+exp(sigma*(Tp-Tb)*TL));
 
         theta += atan(Vr*(sL-sR)/(sL+sR))*dt;
+
+        theta = fmod(theta,2.*M_PI);
 
         x += cos(theta)*V*dt;
         y += sin(theta)*V*dt;
@@ -170,6 +172,7 @@ public:
     void store(void){
         x_store.push_back((float)x);
         y_store.push_back((float)y);
+        b_store.push_back((float)Tb);
     }
 
 };

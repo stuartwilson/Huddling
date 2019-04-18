@@ -13,6 +13,7 @@ using namespace std;
 using namespace morph;
 
 
+
 void overlap(agent* i, agent* j){
     double r2 = 1.;     // NOTE: assumes radii 1
     double r2x4 = 4.;   // NOTE: assumes radii 1
@@ -262,6 +263,11 @@ int main (int argc, char **argv)
         stringstream py;
         py<<path.str()<<"y";
         data.add_contained_vals (py.str().c_str(), agents[i].y_store);
+
+        stringstream pb;
+        pb<<path.str()<<"b";
+        data.add_contained_vals (pb.str().c_str(), agents[i].b_store);
+
     }
 
     return 0;
