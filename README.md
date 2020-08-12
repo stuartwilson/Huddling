@@ -31,3 +31,4 @@ the results should be stored in test/agents.h5, which you can visualize by runni
 python analyse.py
 ```
 
+*Note that only the template (not glancy or learn) have been updated yet, so they will fail
