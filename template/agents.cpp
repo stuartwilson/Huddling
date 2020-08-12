@@ -24,7 +24,7 @@ typedef morph::VisualDataModel<FLT>* VdmPtr;
 int main (int argc, char **argv)
 {
     if (argc < 2) {
-        cerr << "\nUsage: ./build/agents logdirectory seed \n\n";
+        std::cerr << "\nUsage: ./build/agents logdirectory seed \n\n";
         return -1;
     }
 
@@ -89,8 +89,8 @@ int main (int argc, char **argv)
 
             stepCount ++;
 
-        } catch (const exception& e) {
-            cerr << "Caught exception calling agent.step(): " << e.what() << endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Caught exception calling agent.step(): " << e.what() << std::endl;
             finished = true;
         }
 
@@ -100,8 +100,8 @@ int main (int argc, char **argv)
                 for(int i=0;i<agents.size();i++){
                     agents[i].store();
                 }
-            } catch (const exception& e) {
-                cerr << "Caught exception calling agent.store(): " << e.what() << endl;
+            } catch (const std::exception& e) {
+                std::cerr << "Caught exception calling agent.store(): " << e.what() << std::endl;
                 finished = true;
             }
         }
@@ -113,19 +113,19 @@ int main (int argc, char **argv)
     }
 
     // saving here
-    stringstream fname;
+    std::stringstream fname;
     fname << logpath << "/agents.h5";
     morph::HdfData data(fname.str());
     for(int i=0;i<agents.size();i++){
 
-        stringstream path;
+        std::stringstream path;
         path << "/a" << i <<"_";
 
-        stringstream px;
+        std::stringstream px;
         px<<path.str()<<"x";
         data.add_contained_vals (px.str().c_str(), agents[i].x_store);
 
-        stringstream py;
+        std::stringstream py;
         py<<path.str()<<"y";
         data.add_contained_vals (py.str().c_str(), agents[i].y_store);
     }
