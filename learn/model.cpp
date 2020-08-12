@@ -128,6 +128,8 @@ int main (int argc, char **argv)
         return 1;
     }
 
+
+    double zOffset = -1.2;
     /*
      * Get simulation-wide parameters from JSON
      */
@@ -348,10 +350,10 @@ int main (int argc, char **argv)
         if(refreshRate){
             if (!(stepCount%refreshRate)){
                 displays[0].resetDisplay (fix, eye, rot);
-                displays[0].drawCylinder(0,0,-0.1,0.,0.,0.,rA,rA,24,vector<double>(3,0.9));
+                displays[0].drawCylinder(0,0,zOffset-0.1,0.,0.,zOffset,rA,rA,24,vector<double>(3,0.9));
                 try {
                     for(int i=0;i<agents.size();i++){
-                        agents[i].plot(displays[0]);
+                        agents[i].plot(displays[0],zOffset);
                     }
                 } catch (const exception& e) {
                     cerr << "Caught exception calling agent.plot(): " << e.what() << endl;

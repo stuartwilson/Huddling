@@ -8,7 +8,7 @@
 	"control" : 1,
 	"refreshRate" : 10,
 	"storageRate" : 10,
-	"camera" : 25.,
+	"camera" : 19.,
 	"seed"   : 1,
 	"param" : 20.,
 

@@ -318,14 +318,14 @@ void reorientThermometers(void){
 
     }
 
-    void plot(morph::Gdisplay& plt){
+    void plot(morph::Gdisplay& plt, double zOffset){
 
        double colscale = fmax(0.,fmin(1.,(Tb-0.)/(50.-0.)));
         col = morph::Tools::getJetColor(colscale);
 
-        plt.drawSphere(x,y,0.,rProx,col,24);
+        plt.drawSphere(x,y,zOffset,rProx,col,24);
         //plt.drawCylinder(x,y,-0.1,x,y,0.15,rProx,rProx,24,col);
-        plt.drawCylinder(x,y,-0.1,x,y,0.1,rDist,rDist,24,IDcolor);
+        plt.drawCylinder(x,y,zOffset-0.1,x,y,zOffset+0.1,rDist,rDist,24,IDcolor);
 
     }
 
