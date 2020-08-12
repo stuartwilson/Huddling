@@ -4,17 +4,30 @@ Agent based and other models of thermoregulatory huddling
 
 Requires morphologica to be installed, to include tools for visualization, json, hdf5, etc.
 
-To use the template... 
+Make in the usual cmake way:
 
+```
 cd template
+mkdir build
+cd build
+cmake ..
+make
+cd ..
+```
+ 
+Create a model in a subdirectory, e.g., test, by populating it with test/config.json (there is an example in test already). 
 
-define a new eperiment by creating a new .json file in the config directory, e.g., expt2.json
+Then run with 
 
-Then run using e.g., 
+```
+./build/agents test 100000 1
+```
 
-./model hello config/expt2.json logs
+to run for 100000 steps with seed 1.
 
-the results should be stored in logs directory, which will be created if it does not exist
-
-then you can run python analyse.py to display the results
+the results should be stored in test/agents.h5, which you can visualize by running
+ 
+```
+python analyse.py
+```
 
