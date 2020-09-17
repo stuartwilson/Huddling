@@ -1,15 +1,8 @@
-#include "morph/display.h"
-#include "morph/tools.h"
-#include "morph/HdfData.h"
-#include <iostream>
-#include <sstream>
-#include <string>
 #include <vector>
-#include <array>
-#include <iomanip>
-#include <cmath>
+#include "morph/HdfData.h"
+#include "morph/config.h"
+#include "morph/tools.h"
 
-using namespace morph;
 
 
 class sensor{
@@ -45,7 +38,7 @@ public:
     unsigned int N;
     double alpha, gamma, turn;
     sensor sensorL, sensorR;
-    vector<double> w, L, R, L2, R2;
+    std::vector<double> w, L, R, L2, R2;
     brain(double angle, unsigned int N,double alpha, double gamma,double weightsigma){
         this->N = N;
         this->alpha = alpha;
@@ -94,11 +87,11 @@ public:
     sensor contact;
     double x, y, rProx, rDist, rProxSq, rDistSq, theta, rewardInput, rewardOutput, noise, speed;
     double vx, vy, Tb, Tp, dTheta;
-    vector<brain> brains;
+    std::vector<brain> brains;
     int n;
-    vector<double> DK, tau, xk, yk, phik, LR;
-    vector<float> x_store, y_store;
-    vector<double> col, IDcolor;
+    std::vector<double> DK, tau, xk, yk, phik, LR;
+    std::vector<float> x_store, y_store;
+    std::vector<double> col, IDcolor;
 
     double overdn, piOver2, nnorm, sigma;
     double Tc, A, TL, TR, G, k1, k2;
@@ -318,6 +311,7 @@ void reorientThermometers(void){
 
     }
 
+    /*
     void plot(morph::Gdisplay& plt, double zOffset){
 
        double colscale = fmax(0.,fmin(1.,(Tb-0.)/(50.-0.)));
@@ -328,6 +322,7 @@ void reorientThermometers(void){
         plt.drawCylinder(x,y,zOffset-0.1,x,y,zOffset+0.1,rDist,rDist,24,IDcolor);
 
     }
+    */
 
     void store(){
         x_store.push_back((float)x);

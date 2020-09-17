@@ -58,7 +58,7 @@ int main (int argc, char **argv)
     // SETUP VISUAL
     Visual v(1024, 768, "Visualization");
     v.zNear = 0.001;
-    v.showCoordArrows = false;
+    v.showCoordArrows = true;
     v.backgroundWhite();
     morph::Vector<FLT, 3> offset = {0.0,0.0,0.0};
     std::vector<morph::Vector<FLT,3>> zerovecs(agents.size());
