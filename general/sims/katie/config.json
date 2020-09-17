@@ -1,0 +1,58 @@
+/*
+ * Model developed for the BSc dissertation of Kathryn Lancaster, submitted 2019.
+ */
+{
+	"steps" : 1000000,
+	"TA" : 32.0,
+	"Rarena" : 10.,
+	"control" : 1,
+	"refreshRate" : 10,
+	"storageRate" : 10,
+	"camera" : 19.,
+	"seed"   : 1,
+	"param" : 20.,
+
+	"agents": [
+
+		{	// learner
+			"N" : 1,
+			"speed" : 1.0,
+			"rProx" : 1.0,
+			"rDist" : 0.0,
+			"identity" : 0,
+			"reward"   : 0.0,
+			"noise"	: 1.00,
+			"free"	: 1,
+			"k1" 	: 1.0,
+			"k2"	: 2.5,
+			"G"	: 2.5,
+			"alpha" : 0.2,
+			"gamma" : 0.7,
+			"units" : 60
+         	},    
+                {	// left rewarding
+			"N" : 1,
+			"x" : -5.,
+			"y" : 0.,
+			"speed" : 0.,
+			"rProx" : 1.0,
+			"rDist" : 4.0,
+			"identity" : 1,
+			"reward"   : 1.0,
+			"free"	: 0
+         	},
+		{	// right aversive
+			"N" : 1,
+			"x" : 5.,
+			"y" : 0.,
+			"speed" : 0.,
+			"rProx" : 1.0,
+			"rDist" : 4.0,
+			"identity" : 2,
+			"reward"   : -1.0,
+			"free"	: 0
+         	}    	
+
+	]
+
+}
